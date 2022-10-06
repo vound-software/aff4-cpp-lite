@@ -26,9 +26,21 @@ namespace aff4 {
 namespace util {
 
 std::wstring s2ws(const std::string& str) {
-	using convert_typeX = std::codecvt_utf8<wchar_t>;
-	std::wstring_convert<convert_typeX, wchar_t> converterX;
-	return converterX.from_bytes(str);
+	try {
+		using convert_typeX = std::codecvt_utf8<wchar_t>;
+		std::wstring_convert<convert_typeX, wchar_t> converterX;
+		return converterX.from_bytes(str.c_str());
+	}
+	catch (std::range_error& e) {
+
+		size_t len = str.length();
+		std::wstring result;
+		result.reserve(len);
+		for (size_t i = 0; i < len; i++) {
+			result.push_back(str[i] & 0xff);
+		}
+		return result;
+	}
 }
 
 std::string ws2s(const std::wstring& wstr) {

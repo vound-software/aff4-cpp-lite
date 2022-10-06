@@ -72,32 +72,6 @@ LIBAFF4_API_LOCAL inline bool fileExists(const std::string& name) {
 }
 
 /**
- * Does the file entity exist, and is a regular file.
- * @param name The filename to check
- * @return TRUE if the file entity exists and is a regular file.
- */
-LIBAFF4_API_LOCAL inline bool isFile(const std::string& name) {
-#ifndef _WIN32
-	/*
-	* POSIX based systems.
-	*/
-	struct stat buffer;
-	if (::stat(name.c_str(), &buffer) == 0) {
-		return S_ISREG(buffer.st_mode);
-	}
-	return false;
-#else 
-	/*
-	* Windows based systems
-	*/
-	std::wstring filename = aff4::util::s2ws(name);
-	DWORD dwAttrib = GetFileAttributes(filename.c_str());
-	return (dwAttrib != INVALID_FILE_ATTRIBUTES && !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
-
-#endif
-}
-
-/**
  * Does the file entity exist and is a directory.
  * @param name The filename to check
  * @return TRUE if the file entity exists and is a directory.
@@ -123,6 +97,37 @@ LIBAFF4_API_LOCAL inline bool isDirectory(const std::string& name) {
 #endif
 	return false;
 }
+
+/**
+ * Does the file entity exist, and is a regular file.
+ * @param name The filename to check
+ * @return TRUE if the file entity exists and is a regular file.
+ */
+LIBAFF4_API_LOCAL inline bool isFile(const std::string& name) {
+#ifndef _WIN32
+	/*
+	* POSIX based systems.
+	*/
+	struct stat buffer;
+	if (::stat(name.c_str(), &buffer) == 0) {
+		return S_ISREG(buffer.st_mode);
+	}
+	return false;
+#else 
+	/*
+	* Windows based systems
+	*/
+	if (fileExists(name) && !isDirectory(name)) {
+		return true;
+	}
+
+	return false;
+
+#endif
+}
+
+
+
 
 }/* namespace util */
 }/* namespace aff4 */

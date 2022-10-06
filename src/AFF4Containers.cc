@@ -103,7 +103,7 @@ namespace aff4 {
 		bool isAFF4Container(std::string filename) noexcept {
 			// Cheap nasty not really unicode transformation to lower case.
 			std::transform(filename.begin(), filename.end(), filename.begin(), ::tolower);
-			return aff4::util::hasSuffix(filename, ".af4") || aff4::util::hasSuffix(filename, ".aff4");
+			return aff4::util::hasSuffix(filename, ".af4") || aff4::util::hasSuffix(filename, ".aff4") || aff4::util::hasSuffix(filename, ".zip");
 		}
 
 		std::string getResourceID(const std::string& filename) noexcept {
